@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- La mitad vacía de la estrella con borde negro -->
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeColor="#000000"
+        android:strokeWidth="1"
+        android:pathData="M12,17.27L18.18,21l-1.64-7.03L22,9.24l-7.19-.61L12,2 9.19,8.63 2,9.24l5.46,4.73L5.82,21z"
+        android:fillAlpha="0.5" />
+
+    <!-- La mitad rellena de la estrella -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M12,2L14.81,8.63L22,9.24l-5.46,4.73L18.18,21L12,17.27L12,2z" />
+</vector>
+

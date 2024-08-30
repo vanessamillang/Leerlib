@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "615754764246",
+    "project_id": "leerlib-java",
+    "storage_bucket": "leerlib-java.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:615754764246:android:f59066befbb33718299e77",
+        "android_client_info": {
+          "package_name": "com.millanvanesa.leerlib_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDusi7hW6jPT7LUKtl2In23Oe4DD2CVbQk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

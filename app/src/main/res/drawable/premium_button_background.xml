@@ -1,0 +1,17 @@
+<!-- res/drawable/premium_button_background.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Estado presionado -->
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#3F51B5"/> <!-- Color cuando se presiona -->
+            <corners android:radius="20dp"/> <!-- Esquinas redondeadas -->
+        </shape>
+    </item>
+    <!-- Estado normal -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#2196F3"/> <!-- Color de fondo -->
+            <corners android:radius="20dp"/> <!-- Esquinas redondeadas -->
+        </shape>
+    </item>
+</selector>

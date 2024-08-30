@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values/colors.xml -->
+<resources>
+    <color name="blue">#2196F3</color> <!-- Ejemplo de color azul -->
+    <color name="blue_dark">#1976D2</color> <!-- Azul más oscuro para el estado presionado -->
+    <color name="gray">#BDBDBD</color> <!-- Gris para el estado deshabilitado -->
+    <color name="white">#FFFFFF</color>
+
+</resources>
