@@ -157,12 +157,18 @@ public class AddContentActivity extends AppCompatActivity {
         ImageButton favoritesButton = findViewById(R.id.myLibraryButton);
         ImageButton searchButton = findViewById(R.id.searchButton); // Agregar el ImageButton de búsqueda
         ImageButton homeButton = findViewById(R.id.homeButton);
+        ImageButton ticketsButton = findViewById(R.id.ticketsButton);
 
         profileButton.setOnClickListener(v -> navigateToUserProfile());
         addContentButton.setOnClickListener(v -> navigateToAddContent());
         favoritesButton.setOnClickListener(v -> navigateToFavorites());
         searchButton.setOnClickListener(v -> navigateToCategory()); // Agregar listener para búsqueda
         homeButton.setOnClickListener(v -> navigateToMain());
+
+        ticketsButton.setOnClickListener(v -> {
+            Intent ticketsIntent = new Intent(AddContentActivity.this, TicketSoporteActivity.class);
+            startActivity(ticketsIntent);
+        });
     }
 
     private void openFileChooser(int requestCode) {

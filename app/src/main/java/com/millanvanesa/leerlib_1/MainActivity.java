@@ -3,7 +3,9 @@ package com.millanvanesa.leerlib_1;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +16,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -58,8 +62,32 @@ public class MainActivity extends AppCompatActivity {
         currentUser = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
+        // Obtener las referencias a los botones que quieres mostrar/ocultar
+        ImageButton addContentButton = findViewById(R.id.addContentButton);
+        ImageButton ticketsButton = findViewById(R.id.ticketsButton);
+
         if (currentUser != null) {
             loadProfileImage(currentUser.getUid());
+
+            // Cargar el rol (position) del usuario actual
+            db.collection("users").document(currentUser.getUid()).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                String position = documentSnapshot.getString("position");
+                                updateUIBasedOnRole(position, addContentButton, ticketsButton);
+                            } else {
+                                Log.w(TAG, "Documento del usuario no encontrado.");
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error al obtener el documento del usuario.", e);
+                        }
+                    });
         } else {
             Log.w(TAG, "Usuario no autenticado.");
         }
@@ -107,6 +135,30 @@ public class MainActivity extends AppCompatActivity {
         setupFooterButtons();
     }
 
+    // Método para actualizar la visibilidad de los botones según el rol
+    private void updateUIBasedOnRole(String position, ImageButton addContentButton, ImageButton ticketsButton) {
+        if (position != null) {
+            switch (position) {
+                case "admin":
+                    // Admin puede ver ambos botones
+                    addContentButton.setVisibility(View.VISIBLE);
+                    ticketsButton.setVisibility(View.VISIBLE);
+                    break;
+                case "support":
+                    // Soporte solo puede ver el botón de tickets
+                    addContentButton.setVisibility(View.GONE);
+                    ticketsButton.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    // Usuarios comunes no ven ninguno de estos botones
+                    addContentButton.setVisibility(View.GONE);
+                    ticketsButton.setVisibility(View.GONE);
+                    break;
+            }
+        }
+    }
+
+
     private void fetchTopRatedBooks() {
         db.collection("ratings")
                 .orderBy("rating", Query.Direction.DESCENDING)
@@ -121,12 +173,20 @@ public class MainActivity extends AppCompatActivity {
                                 bookIds.add(uidLibro);
                             }
                         }
+                        // Mostrar IDs en Toast
                         fetchBookDetails(bookIds, true); // 'true' para recomendaciones por rating
                     } else {
+                        // Imprimir el error completo en los logs
                         Log.w(TAG, "Error obteniendo documentos de ratings.", task.getException());
                     }
                 });
     }
+
+
+
+
+
+
 
     private void fetchBookDetails(List<String> bookIds, boolean isForRating) {
         if (bookIds.isEmpty()) {
@@ -150,7 +210,8 @@ public class MainActivity extends AppCompatActivity {
 
                             if (name != null && imageUrl != null) {
                                 if (isForRating) {
-                                    topRatedList.add(new RatingItem(name, imageUrl, bookId, false, false, false,false));                                }
+                                    topRatedList.add(new RatingItem(name, imageUrl, bookId, false, false, false, false));
+                                }
                             }
                         }
 
@@ -163,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
     private void fetchBooksByAuthors() {
         if (currentUser == null) {
@@ -414,7 +476,6 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-
     private void loadProfileImage(String userId) {
         db.collection("users")
                 .document(userId)
@@ -450,6 +511,10 @@ public class MainActivity extends AppCompatActivity {
         ImageButton addButton = findViewById(R.id.addContentButton);
         ImageButton favoritesButton = findViewById(R.id.favoritesButton);
         ImageButton userProfileButton = findViewById(R.id.profileButton);
+        ImageButton ticketsButton = findViewById(R.id.ticketsButton);
+
+
+
 
         homeButton.setOnClickListener(v -> {
             // Acción para botón Home
@@ -475,5 +540,12 @@ public class MainActivity extends AppCompatActivity {
             // Acción para botón Profile
             startActivity(new Intent(MainActivity.this, UserProfileActivity.class));
         });
+
+        ticketsButton.setOnClickListener(v -> {
+            // Acción para botón Tickets
+            startActivity(new Intent(MainActivity.this, TicketSoporteActivity.class));
+        });
     }
+
+
 }

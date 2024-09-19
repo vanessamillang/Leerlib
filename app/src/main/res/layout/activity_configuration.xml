@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    tools:context=".ConfigurationActivity">
+
+    <!-- Header with logo, user name, and profile button -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/headerCardView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="24dp">
+
+            <!-- Logo -->
+            <ImageView
+                android:id="@+id/logoImageView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/leerliblogo"
+                android:contentDescription="Logo de Leerlib" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Configuración"
+                android:textColor="#333333"
+                android:textSize="20sp"
+                android:typeface="sans"
+                android:textStyle="bold" />
+
+            <!-- Botón de Perfil -->
+            <ImageButton
+                android:id="@+id/profileButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="Perfil"
+                android:src="@drawable/perfil"
+                android:background="@drawable/circle_background"/>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- CardView wrapping the ScrollView content -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/contentCardView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/headerCardView"
+        app:layout_constraintBottom_toTopOf="@id/footerCardView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Opción Editar Perfil -->
+                <TextView
+                    android:id="@+id/editProfileTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Editar perfil"
+                    android:padding="16dp"
+                    android:drawableEnd="@drawable/ic_chevron_right"
+                    android:drawableTint="#333333"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:textColor="#666666"
+                    android:textSize="16sp"
+                    android:typeface="sans"
+                    android:textStyle="normal" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#DDDDDD"/>
+
+                <!-- Opción Configuración de la Cuenta -->
+                <TextView
+                    android:id="@+id/accountSettingsTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Configuración de la cuenta"
+                    android:padding="16dp"
+                    android:drawableEnd="@drawable/ic_chevron_right"
+                    android:drawableTint="#333333"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:textColor="#666666"
+                    android:textSize="16sp"
+                    android:typeface="sans"
+                    android:textStyle="normal" />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#DDDDDD"/>
+
+                <!-- Opción Suscripciones -->
+                <TextView
+                    android:id="@+id/subscriptionsTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Suscripciones"
+                    android:padding="16dp"
+                    android:drawableEnd="@drawable/ic_chevron_right"
+                    android:drawableTint="#333333"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:textColor="#666666"
+                    android:textSize="16sp"
+                    android:typeface="sans"
+                    android:textStyle="normal" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#DDDDDD"/>
+
+                <!-- Opción Sobre Leerlib -->
+                <TextView
+                    android:id="@+id/aboutLeerlibTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sobre Leerlib"
+                    android:padding="16dp"
+                    android:drawableEnd="@drawable/ic_chevron_right"
+                    android:drawableTint="#333333"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:textColor="#666666"
+                    android:textSize="16sp"
+                    android:typeface="sans"
+                    android:textStyle="normal" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#DDDDDD"/>
+
+                <!-- Opción Ayuda y Apoyo Técnico -->
+                <TextView
+                    android:id="@+id/helpSupportTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ayuda y apoyo técnico"
+                    android:padding="16dp"
+                    android:drawableEnd="@drawable/ic_chevron_right"
+                    android:drawableTint="#333333"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:textColor="#666666"
+                    android:textSize="16sp"
+                    android:typeface="sans"
+                    android:textStyle="normal" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#DDDDDD"/>
+
+                <!-- Opción Cerrar Sesión -->
+                <TextView
+                    android:id="@+id/logoutTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cerrar sesión"
+                    android:padding="16dp"
+                    android:drawableEnd="@drawable/ic_chevron_right"
+                    android:drawableTint="#333333"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:textColor="#666666"
+                    android:textSize="16sp"
+                    android:typeface="sans"
+                    android:textStyle="normal" />
+
+            </LinearLayout>
+        </ScrollView>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Footer with additional options -->
+    <LinearLayout
+        android:id="@+id/footerCardView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Home Button -->
+        <ImageButton
+            android:id="@+id/homeButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Home"
+            android:src="@drawable/ic_home"/>
+
+        <!-- Search Button -->
+        <ImageButton
+            android:id="@+id/searchButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Buscar"
+            android:src="@drawable/ic_search"/>
+
+        <!-- Add Content Button -->
+        <ImageButton
+            android:id="@+id/addContentButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Agregar contenido"
+            android:src="@drawable/ic_add_content"
+            android:visibility="gone"
+            />
+
+        <!-- My Library Button -->
+        <ImageButton
+            android:id="@+id/myLibraryButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Mi biblioteca"
+            android:src="@drawable/ic_favorites" />
+
+        <!-- Notifications Button -->
+        <ImageButton
+            android:id="@+id/notificationsButtonFooter"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Notificaciones"
+            android:src="@drawable/ic_notifications"/>
+
+        <ImageButton
+            android:id="@+id/ticketsButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Tickets"
+            android:src="@drawable/ic_ticket"
+            android:visibility="gone" />
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

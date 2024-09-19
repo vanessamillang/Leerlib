@@ -3,6 +3,7 @@ package com.millanvanesa.leerlib_1;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -61,6 +62,20 @@ public class LibrosActivity extends AppCompatActivity {
 
         loadProfileImage();
         fetchLibros(categoryId);
+
+        // Configurar la visibilidad de los botones según el rol del usuario
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            db.collection("users").document(userId).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            DocumentSnapshot document = task.getResult();
+                            String position = document.getString("position");
+                            // Actualizar UI según el rol del usuario
+                            updateUIBasedOnRole(position);
+                        }
+                    });
+        }
     }
 
     private void initFirebase() {
@@ -133,6 +148,11 @@ public class LibrosActivity extends AppCompatActivity {
             Intent intent = new Intent(LibrosActivity.this, MainActivity.class);
             intent.putExtra("userId", userId);
             startActivity(intent);
+        });
+
+        findViewById(R.id.ticketsButton).setOnClickListener(v -> {
+            Intent ticketsIntent = new Intent(LibrosActivity.this, TicketSoporteActivity.class);
+            startActivity(ticketsIntent);
         });
     }
 
@@ -212,5 +232,30 @@ public class LibrosActivity extends AppCompatActivity {
     private void showError(String message) {
         Toast.makeText(LibrosActivity.this, message, Toast.LENGTH_SHORT).show();
         Log.e(TAG, message);
+    }
+
+    private void updateUIBasedOnRole(String position) {
+        ImageButton addButton = findViewById(R.id.addContentButton);
+        ImageButton ticketsButton = findViewById(R.id.ticketsButton);
+
+        if (position != null) {
+            switch (position) {
+                case "admin":
+                    // Admin puede ver ambos botones
+                    addButton.setVisibility(View.VISIBLE);
+                    ticketsButton.setVisibility(View.VISIBLE);
+                    break;
+                case "support":
+                    // Soporte solo puede ver el botón de tickets
+                    addButton.setVisibility(View.GONE);
+                    ticketsButton.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    // Usuarios comunes no ven ninguno de estos botones
+                    addButton.setVisibility(View.GONE);
+                    ticketsButton.setVisibility(View.GONE);
+                    break;
+            }
+        }
     }
 }

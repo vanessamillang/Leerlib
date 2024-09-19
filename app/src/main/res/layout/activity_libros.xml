@@ -135,7 +135,8 @@
             android:contentDescription="Agregar contenido"
             android:onClick="AddContentActivity"
             android:src="@drawable/ic_add_content"
-            android:layout_marginStart="16dp" />
+            android:layout_marginStart="16dp"
+            android:visibility="gone"/>
 
         <!-- Logout Button -->
 
@@ -159,6 +160,16 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Notificaciones"
             android:src="@drawable/ic_notifications" />
+
+        <ImageButton
+            android:id="@+id/ticketsButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Tickets"
+            android:src="@drawable/ic_ticket"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

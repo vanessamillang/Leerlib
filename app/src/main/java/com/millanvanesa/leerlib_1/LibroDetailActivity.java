@@ -67,6 +67,7 @@ public class LibroDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_libro_detail);
 
+        // Inicializar Firestore y Auth
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
@@ -77,7 +78,6 @@ public class LibroDetailActivity extends AppCompatActivity {
         userProfileImageView = findViewById(R.id.userProfileImageView);
         userNameTextView = findViewById(R.id.userNameTextView);
         favoriteButton = findViewById(R.id.favoriteButton);
-
         userCommentProfileImageView = findViewById(R.id.userCommentProfileImageView);
         userCommentNameTextView = findViewById(R.id.userCommentNameTextView);
         commentEditText = findViewById(R.id.commentEditText);
@@ -87,20 +87,10 @@ public class LibroDetailActivity extends AppCompatActivity {
         libroId = getIntent().getStringExtra("libroId");
         userId = getIntent().getStringExtra("userId");
 
-
-        // Verifica si currentUser es null antes de usarlo
-        if (currentUser == null) {
-            Log.e(TAG, "Usuario no autenticado");
-            return; // Salir de la actividad si no hay usuario autenticado
-        }
-
         // Cargar la imagen
         loadProfileImage(userId);
-
         loadUserInfo();
-
         fetchLibroDetails(libroId);
-
         loadComments();
 
         Button verPdfButton = findViewById(R.id.verPdfButton);
@@ -125,7 +115,6 @@ public class LibroDetailActivity extends AppCompatActivity {
         calculateAndDisplayAverageRating();
         getUserRating();
 
-
         profileButton = findViewById(R.id.profileButton); // Inicializar el ImageButton profileButton
         profileButton.setOnClickListener(v -> {
             if (userId != null) {
@@ -145,27 +134,28 @@ public class LibroDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Configurar el botón de categorías
+        // Configurar los botones del pie de página
         ImageButton categoryButton = findViewById(R.id.searchButton);
+        ImageButton homeButton = findViewById(R.id.homeButton);
+        ImageButton favoritesButton = findViewById(R.id.myLibraryButton);
+        ImageButton addContentButton = findViewById(R.id.addContentButton);
+        ImageButton ticketsButton = findViewById(R.id.ticketsButton);
+
         categoryButton.setOnClickListener(v -> {
             Intent intent = new Intent(LibroDetailActivity.this, CategoryActivity.class);
             startActivity(intent);
         });
 
-        // Configurar botón de inicio
-        ImageButton homeButton = findViewById(R.id.homeButton);
         homeButton.setOnClickListener(v -> {
             Intent intent = new Intent(LibroDetailActivity.this, MainActivity.class);
             startActivity(intent);
         });
 
-        ImageButton favoritesButton = findViewById(R.id.myLibraryButton);
         favoritesButton.setOnClickListener(v -> {
             Intent intent = new Intent(LibroDetailActivity.this, FavoritesActivity.class);
             startActivity(intent);
         });
 
-        ImageButton addContentButton = findViewById(R.id.addContentButton);
         addContentButton.setOnClickListener(v -> {
             Intent intent = new Intent(LibroDetailActivity.this, AddContentActivity.class);
             startActivity(intent);
@@ -179,6 +169,47 @@ public class LibroDetailActivity extends AppCompatActivity {
                 Toast.makeText(LibroDetailActivity.this, "Escribe un comentario", Toast.LENGTH_SHORT).show();
             }
         });
+
+        ticketsButton.setOnClickListener(v -> {
+            Intent ticketsIntent = new Intent(LibroDetailActivity.this, TicketSoporteActivity.class);
+            startActivity(ticketsIntent);
+        });
+
+        // Configurar la visibilidad de los botones según el rol del usuario
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            db.collection("users").document(userId).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult() != null) {
+                    DocumentSnapshot document = task.getResult();
+                    String position = document.getString("position");
+
+                    // Actualizar UI según el rol del usuario
+                    updateUIBasedOnRole(position, addContentButton, ticketsButton);
+                }
+            });
+        }
+    }
+
+    private void updateUIBasedOnRole(String position, ImageButton addButton, ImageButton ticketsButton) {
+        if (position != null) {
+            switch (position) {
+                case "admin":
+                    // Admin puede ver ambos botones
+                    addButton.setVisibility(View.VISIBLE);
+                    ticketsButton.setVisibility(View.VISIBLE);
+                    break;
+                case "support":
+                    // Soporte solo puede ver el botón de tickets
+                    addButton.setVisibility(View.GONE);
+                    ticketsButton.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    // Usuarios comunes no ven ninguno de estos botones
+                    addButton.setVisibility(View.GONE);
+                    ticketsButton.setVisibility(View.GONE);
+                    break;
+            }
+        }
     }
 
     @Override
@@ -190,7 +221,6 @@ public class LibroDetailActivity extends AppCompatActivity {
         // Llamar a getUserRating() para mostrar la calificación del usuario
         getUserRating();
     }
-
     //Metodo para mostrar el rating de un libro
     private void calculateAndDisplayAverageRating() {
         if (libroId != null) {
@@ -225,8 +255,6 @@ public class LibroDetailActivity extends AppCompatActivity {
                     });
         }
     }
-
-
     private void updateStarRating(double averageRating) {
         ImageButton[] stars = {
                 findViewById(R.id.Star_1),
@@ -249,9 +277,6 @@ public class LibroDetailActivity extends AppCompatActivity {
             }
         }
     }
-
-
-
     // Método para actualizar la interfaz de usuario según la calificación
     private void setRating(int rating) {
         currentRating = rating;
@@ -275,13 +300,13 @@ public class LibroDetailActivity extends AppCompatActivity {
         calculateAndDisplayAverageRating(); // Actualizar las estrellas
 
     }
-
     // Método para cargar la calificacion del usuario
     private void getUserRating() {
         if (libroId != null && userId != null) {
             db.collection("ratings")
                     .whereEqualTo("uidLibro", libroId)
                     .whereEqualTo("uidUser", userId)
+
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -300,8 +325,6 @@ public class LibroDetailActivity extends AppCompatActivity {
                     });
         }
     }
-
-
     private void updateUserRating(int userRating) {
         ImageButton[] stars = {
                 findViewById(R.id.star1),
@@ -355,7 +378,6 @@ public class LibroDetailActivity extends AppCompatActivity {
             Log.e(TAG, "Usuario o ID del libro no disponible");
         }
     }
-
     private void loadProfileImage(String userId) {
         Log.d(TAG, "Loading profile image for UID: " + userId);
         db.collection("users").document(userId).get()

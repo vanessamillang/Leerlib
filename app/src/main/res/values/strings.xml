@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">leerlib_1</string>
+    <string-array name="ticket_status_array">
+        <item>Pendiente</item>
+        <item>En proceso</item>
+        <item>Resuelto</item>
+    </string-array>
 </resources>

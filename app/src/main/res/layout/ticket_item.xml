@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <!-- ID del Ticket -->
+    <TextView
+        android:id="@+id/ticketSubjectTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <!-- Estado del Ticket -->
+    <TextView
+        android:id="@+id/ticketStatusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Pendiente"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="14sp" />
+
+    <!-- Botón para marcar como resuelto con un ícono -->
+    <ImageButton
+        android:id="@+id/markResolvedButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Marcar como resuelto"
+        android:src="@drawable/ic_check" />
+</LinearLayout>

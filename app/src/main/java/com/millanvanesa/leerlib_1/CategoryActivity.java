@@ -3,9 +3,8 @@ package com.millanvanesa.leerlib_1;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
+import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.SearchView;
@@ -21,7 +20,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +32,7 @@ public class CategoryActivity extends AppCompatActivity {
     private ImageButton addContentButton;
     private ImageButton favoritesButton;
     private ImageButton homeButton;
+    private ImageButton ticketsButton; // Nuevo botón para Tickets
     private RecyclerView recyclerView;
     private CategoryAdapter categoryAdapter;
     private BookAdapter bookAdapter; // Adaptador para libros
@@ -55,6 +54,7 @@ public class CategoryActivity extends AppCompatActivity {
         addContentButton = findViewById(R.id.addContentButton);
         favoritesButton = findViewById(R.id.myLibraryButton);
         homeButton = findViewById(R.id.homeButton);
+        ticketsButton = findViewById(R.id.ticketsButton); // Inicializar el nuevo botón
         recyclerView = findViewById(R.id.categoryRecyclerView);
         searchView = findViewById(R.id.searchView);
 
@@ -79,7 +79,6 @@ public class CategoryActivity extends AppCompatActivity {
             Category category = filteredCategoryList.get(position);
             String categoryId = category.getUid();
             String categoryName = category.getNombre();
-
 
             FirebaseUser currentUser = mAuth.getCurrentUser();
             if (currentUser != null) {
@@ -125,9 +124,11 @@ public class CategoryActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            Log.d(TAG, "Usuario actual: " + currentUser.getUid());
-            setupProfileButton(R.id.profileButton, currentUser.getUid());
-            loadProfileImage(currentUser.getUid());
+            String userId = currentUser.getUid();
+            Log.d(TAG, "Usuario actual: " + userId);
+            setupProfileButton(R.id.profileButton, userId);
+            loadProfileImage(userId);
+            updateUIBasedOnRole(userId); // Obtener el rol del usuario
         } else {
             Intent intent = new Intent(CategoryActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -150,10 +151,10 @@ public class CategoryActivity extends AppCompatActivity {
             if (user != null) {
                 Intent intent = new Intent(CategoryActivity.this, MainActivity.class);
                 intent.putExtra("userId", user.getUid());
-                Log.d(TAG, "Iniciando AddContentActivity con UID: " + user.getUid());
+                Log.d(TAG, "Iniciando MainActivity con UID: " + user.getUid());
                 startActivity(intent);
             } else {
-                Log.e(TAG, "Intento de iniciar AddContentActivity sin usuario autenticado");
+                Log.e(TAG, "Intento de iniciar MainActivity sin usuario autenticado");
             }
         });
 
@@ -175,6 +176,18 @@ public class CategoryActivity extends AppCompatActivity {
                 Intent intent = new Intent(CategoryActivity.this, FavoritesActivity.class);
                 intent.putExtra("userId", user.getUid());
                 startActivity(intent);
+            }
+        });
+
+        // Configurar el botón de Tickets
+        ticketsButton.setOnClickListener(v -> {
+            FirebaseUser user = mAuth.getCurrentUser();
+            if (user != null) {
+                Intent intent = new Intent(CategoryActivity.this, TicketSoporteActivity.class);
+                intent.putExtra("userId", user.getUid());
+                startActivity(intent);
+            } else {
+                Log.e(TAG, "Intento de iniciar TicketSoporteActivity sin usuario autenticado");
             }
         });
     }
@@ -302,5 +315,39 @@ public class CategoryActivity extends AppCompatActivity {
             intent.putExtra("userId", userId);
             startActivity(intent);
         });
+    }
+
+    // Método para actualizar la visibilidad de los botones según el rol
+    private void updateUIBasedOnRole(String userId) {
+        db.collection("users").document(userId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+                        String position = document.getString("position"); // Obtener el rol del usuario
+
+                        if (position != null) {
+                            switch (position) {
+                                case "admin":
+                                    // Admin puede ver ambos botones
+                                    addContentButton.setVisibility(View.VISIBLE);
+                                    ticketsButton.setVisibility(View.VISIBLE);
+                                    break;
+                                case "support":
+                                    // Soporte solo puede ver el botón de tickets
+                                    addContentButton.setVisibility(View.GONE);
+                                    ticketsButton.setVisibility(View.VISIBLE);
+                                    break;
+                                default:
+                                    // Usuarios comunes no ven ninguno de estos botones
+                                    addContentButton.setVisibility(View.GONE);
+                                    ticketsButton.setVisibility(View.GONE);
+                                    break;
+                            }
+                        }
+                    } else {
+                        Log.d(TAG, "Error obteniendo el rol del usuario: ", task.getException());
+                    }
+                });
     }
 }

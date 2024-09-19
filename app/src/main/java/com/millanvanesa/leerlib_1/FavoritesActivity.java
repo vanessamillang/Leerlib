@@ -1,13 +1,20 @@
 package com.millanvanesa.leerlib_1;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -19,6 +26,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +37,10 @@ public class FavoritesActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private ArrayList<String> documentNames;
-    private ArrayList<String> documentIds; // Para almacenar los IDs de los documentos
+    private ArrayList<String> documentIds;
     private ArrayAdapter<String> adapter;
-    private ImageButton profileImageButton;
-    private ImageButton searchButton; // Añadido para el botón de búsqueda
+    private ImageView profileImageButton;
+    private ImageButton searchButton;
     private ImageButton homeButton;
 
     private ListView documentosListView;
@@ -48,80 +57,27 @@ public class FavoritesActivity extends AppCompatActivity {
 
         documentosListView = findViewById(R.id.documentosListView);
         profileImageButton = findViewById(R.id.profileButton);
-        searchButton = findViewById(R.id.searchButton); // Inicializa el botón de búsqueda
-        homeButton = findViewById(R.id.homeButton); // Inicializa el botón de búsqueda
+        searchButton = findViewById(R.id.searchButton);
+        homeButton = findViewById(R.id.homeButton);
         documentNames = new ArrayList<>();
-        documentIds = new ArrayList<>(); // Inicializar la lista de IDs de documentos
+        documentIds = new ArrayList<>();
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, documentNames);
         documentosListView.setAdapter(adapter);
 
         if (user != null) {
             uid = user.getUid();
-
-            // Cargar la imagen del perfil
             loadProfileImage(uid);
-
-            // Cargar documentos favoritos
             loadFavoriteDocuments(uid);
+            setupFooterNavigation();
         } else {
             Toast.makeText(this, "Usuario no autenticado", Toast.LENGTH_SHORT).show();
         }
 
-        // Configurar el clic en un elemento de la lista para ver los detalles del libro
         documentosListView.setOnItemClickListener((parent, view, position, id) -> {
-            String libroId = documentIds.get(position); // Asegúrate de que 'documentIds' contenga los IDs de los libros
-
-            // Crear un Intent para abrir la actividad de detalles del libro
+            String libroId = documentIds.get(position);
             Intent intent = new Intent(FavoritesActivity.this, LibroDetailActivity.class);
-            intent.putExtra("libroId", libroId); // Cambiado a "libroId" en lugar de "documentoId"
-            intent.putExtra("userId", uid); // Cambiado a "userId" en lugar de "uid"
-            startActivity(intent);
-        });
-
-        // Configurar los botones de navegación
-        ImageButton addContentButton = findViewById(R.id.addContentButton);
-        ImageButton myLibraryButton = findViewById(R.id.myLibraryButton);
-        ImageButton profileButton = findViewById(R.id.profileButton);
-
-        addContentButton.setOnClickListener(v -> {
-            if (user != null) {
-                Intent intent = new Intent(FavoritesActivity.this, AddContentActivity.class);
-                intent.putExtra("userId", uid); // Cambiado a "userId" en lugar de "uid"
-                startActivity(intent);
-            }
-        });
-
-        myLibraryButton.setOnClickListener(v -> {
-            if (user != null) {
-                Intent intent = new Intent(FavoritesActivity.this, FavoritesActivity.class);
-                intent.putExtra("userId", uid); // Cambiado a "userId" en lugar de "uid"
-                startActivity(intent);
-            }
-        });
-
-        profileButton.setOnClickListener(v -> {
-            if (user != null) {
-                Intent intent = new Intent(FavoritesActivity.this, UserProfileActivity.class);
-                intent.putExtra("userId", uid); // Cambiado a "userId" en lugar de "uid"
-                startActivity(intent);
-            }
-        });
-
-        // Configurar el botón de búsqueda
-        searchButton.setOnClickListener(v -> {
-            if (user != null) {
-                Intent intent = new Intent(FavoritesActivity.this, CategoryActivity.class);
-                intent.putExtra("userId", uid); // Pasar el ID del usuario a CategoryActivity
-                startActivity(intent);
-            }
-        });
-
-        // Configurar el botón de navegación al MainActivity
-        homeButton.setOnClickListener(v -> {
-            Intent intent = new Intent(FavoritesActivity.this, MainActivity.class);
-            if (user != null) {
-                intent.putExtra("userId", uid);
-            }
+            intent.putExtra("libroId", libroId);
+            intent.putExtra("userId", uid);
             startActivity(intent);
         });
     }
@@ -189,5 +145,80 @@ public class FavoritesActivity extends AppCompatActivity {
                         Log.d(TAG, "Get failed with ", task.getException());
                     }
                 });
+    }
+
+    private void setupFooterNavigation() {
+        ImageButton addContentButton = findViewById(R.id.addContentButton);
+        ImageButton myLibraryButton = findViewById(R.id.myLibraryButton);
+        ImageButton profileButton = findViewById(R.id.profileButton);
+        ImageButton ticketsButton = findViewById(R.id.ticketsButton);
+
+        addContentButton.setOnClickListener(v -> {
+            if (uid != null) {
+                Intent intent = new Intent(FavoritesActivity.this, AddContentActivity.class);
+                intent.putExtra("userId", uid);
+                startActivity(intent);
+            }
+        });
+
+        myLibraryButton.setOnClickListener(v -> {
+            if (uid != null) {
+                Intent intent = new Intent(FavoritesActivity.this, FavoritesActivity.class);
+                intent.putExtra("userId", uid);
+                startActivity(intent);
+            }
+        });
+
+        profileButton.setOnClickListener(v -> {
+            if (uid != null) {
+                Intent intent = new Intent(FavoritesActivity.this, UserProfileActivity.class);
+                intent.putExtra("userId", uid);
+                startActivity(intent);
+            }
+        });
+
+        searchButton.setOnClickListener(v -> {
+            if (uid != null) {
+                Intent intent = new Intent(FavoritesActivity.this, CategoryActivity.class);
+                intent.putExtra("userId", uid);
+                startActivity(intent);
+            }
+        });
+
+        homeButton.setOnClickListener(v -> {
+            Intent intent = new Intent(FavoritesActivity.this, MainActivity.class);
+            if (uid != null) {
+                intent.putExtra("userId", uid);
+            }
+            startActivity(intent);
+        });
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            db.collection("users").document(userId).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult() != null) {
+                    DocumentSnapshot document = task.getResult();
+                    String position = document.getString("position");
+
+                    if (position != null) {
+                        switch (position) {
+                            case "admin":
+                                addContentButton.setVisibility(View.VISIBLE);
+                                ticketsButton.setVisibility(View.VISIBLE);
+                                break;
+                            case "support":
+                                addContentButton.setVisibility(View.GONE);
+                                ticketsButton.setVisibility(View.VISIBLE);
+                                break;
+                            default:
+                                addContentButton.setVisibility(View.GONE);
+                                ticketsButton.setVisibility(View.GONE);
+                                break;
+                        }
+                    }
+                }
+            });
+        }
     }
 }
